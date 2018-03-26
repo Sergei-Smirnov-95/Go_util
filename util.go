@@ -19,7 +19,7 @@ import (
 func main() {
         //reading user,password 
 	standartroot :="https://cloud.lab215.com/remote.php/dav/files/"
-        logpass, err1 := ioutil.ReadFile("/home/sergei/Downloads/login:password.txt")//home/sergei/Go
+        logpass, err1 := ioutil.ReadFile("/tmp/login:password.txt")//home/sergei/
         if err1 != nil {
           panic(err1)
         }
@@ -76,13 +76,22 @@ func main() {
         //unzip
         fmt.Println(filename, dirname)
         cmd := exec.Command("tar","-xvzf", filename,"-C",dirname) // "-r" - поиск архивов и во вложенных папках
+        
         //fmt.Println(filename, dirname)
-        cmd.Stdin = strings.NewReader("some input")
+        cmd.Stdin = strings.NewReader("")
          var out bytes.Buffer
         cmd.Stdout = &out
         err6 := cmd.Run()
         if err6 != nil {
             panic(err6)
+        }
+        cmd2 := exec.Command("rm",filename)         
+        cmd2.Stdin = strings.NewReader("")
+        //var out bytes.Buffer
+        cmd2.Stdout = &out
+        err7 := cmd2.Run()
+        if err7 != nil {
+            panic(err7)
         }
         return 
         
