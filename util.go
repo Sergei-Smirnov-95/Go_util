@@ -19,7 +19,7 @@ import (
 func main() {
         //reading user,password 
 	standartroot :="https://cloud.lab215.com/remote.php/dav/files/"
-        logpass, err1 := ioutil.ReadFile("/tmp/login:password.txt")//home/sergei/
+        logpass, err1 := ioutil.ReadFile("login:password.txt")//home/sergei/
         if err1 != nil {
           panic(err1)
         }
@@ -40,17 +40,17 @@ func main() {
         if err2 != nil {
 	  panic(err2)
         }
-        fmt.Println(data_response_map)
+        //fmt.Println(data_response_map)
         //searching last modified file
-        lastmodif,err3 := latest_arch(data_response_map)
+        lastmodif,err3 := latest_arch(data_response_map,usr)
         if err3 != nil {
 	  panic(err3)
         }
-        fmt.Println(lastmodif)
-
+        //fmt.Println(lastmodif)
+        
         //Getting a file and save
         filePath := filepath.Join(strings.Split(lastmodif,"/")[5],strings.Split(lastmodif,"/")[6])
-        fmt.Println(filePath)
+        //fmt.Println(filePath)
         archdata,err4 := client.Get(filePath)//archdata
         if err4 != nil {
 	  panic(err4)
@@ -98,9 +98,12 @@ func main() {
 }
 
 //search latest arch
-func latest_arch(datamap map[string]webdavclnt.Properties)(string, error) {
+func latest_arch(datamap map[string]webdavclnt.Properties, usrdir string)(string, error) {
   is_started := true
   latest_root :="fileroot"
+  usrdir = filepath.Join("/remote.php/dav/files/",usrdir)
+  usrdir = filepath.Join(usrdir,"logs/")
+  usrdir = strings.Join([]string{usrdir,"/"},"")
   var latest_data time.Time 
   latest_data,err := time.Parse("Mon, 02 Jan 2006 15:04:05","Mon, 02 Jan 2006 15:04:05")
   if err != nil {
@@ -120,10 +123,11 @@ func latest_arch(datamap map[string]webdavclnt.Properties)(string, error) {
     if( is_started == true || latest_data.Before(time_parsed)) {
       is_started = false
       latest_data = time_parsed
-      if(strings.Compare(Key_root,"/remote.php/dav/files/sergei.smirnov/logs/") != 0){
+      if(strings.Compare(Key_root,usrdir) != 0){
         latest_root = Key_root}
     }
   }
-  fmt.Println(latest_root,latest_data)
+  //fmt.Println(usrdir)
+  fmt.Println("Download:",latest_root,latest_data)
   return latest_root,nil
 }
